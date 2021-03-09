@@ -3,15 +3,15 @@ import bisect
 from math import inf
 
 class StairwayToHeaven:
-    def __init__(self, max_size:int):
+    def __init__(self, max_size:int, max_inf = inf, min_inf = -inf):
         self.max_height = 0
         self.max_size = max_size
         self.n = 0
-        self.x_min = +inf
-        self.x_max = -inf
-        self.items = [[-inf,inf,0,0]] #[x1,x2,y1,y2]
+        self.x_min = max_inf 
+        self.x_max = min_inf 
+        self.items = [[self.x_max,self.x_min,0,0]] #[x1,x2,y1,y2]
 
-    def update(self, x:float):
+    def update(self, x):
         self.x_max = max(self.x_max, x)
         self.x_min = min(self.x_min, x)
         
@@ -58,3 +58,10 @@ class StairwayToHeaven:
     
     def get_heights(self):
         return [item[3]-item[2] for item in self.items]
+
+    def get_memory(self):
+        mem = set()
+        for item in self.items:
+            mem.add(item[0])
+            mem.add(item[1])
+        return list(mem)
