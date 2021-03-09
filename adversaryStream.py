@@ -34,6 +34,9 @@ class Adversary:
         mem_rho = sorted(sketch_rho.get_memory())
         mem_rho = [l_rho] + [x for x in mem_rho if x>l_rho and x<r_rho] + [r_rho]
 
+        #print(f'mem_pi={mem_pi}')
+        #print(f'mem_rho={mem_rho}')
+
         I = 0
         maxdiff = -1
         for i in range(0, len(mem_rho)-1):
@@ -45,14 +48,21 @@ class Adversary:
         #print(f'I={I}')
 
         alpha_pi = mem_pi[I]
-        beta_pi = sorted(pi)[bisect.bisect_right(sorted(pi),mem_pi[I])]
+
+        j = bisect.bisect_right(sorted(pi),mem_pi[I])
+        if j==len(sorted(pi)):
+            beta_pi = (+inf,)
+        else: 
+            beta_pi = sorted(pi)[j]
 
         j = bisect.bisect_left(sorted(rho), mem_rho[I+1])
         if j==0:
             alpha_rho = (-inf,)
         else:
             alpha_rho = sorted(rho)[j-1]
+
         beta_rho = mem_rho[I+1]
+
         return (alpha_pi, beta_pi, alpha_rho, beta_rho)
 
     def advStrategy(self, k, pi, rho, l_pi, r_pi, l_rho, r_rho):
