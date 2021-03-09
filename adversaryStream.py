@@ -28,7 +28,7 @@ class Adversary:
         for x in pi:
             sketch_pi.update(x)
         for x in rho:
-            sketch_pi.update(x)
+            sketch_rho.update(x)
         mem_pi = sorted(sketch_pi.get_memory())
         mem_pi = [l_pi] + [x for x in mem_pi if x>l_pi and x<r_pi] + [r_pi]
         mem_rho = sorted(sketch_rho.get_memory())
@@ -42,8 +42,10 @@ class Adversary:
                 I = i
                 dif = maxdiff
 
+        #print(f'I={I}')
+
         alpha_pi = mem_pi[I]
-        beta_pi = sorted(pi)[bisect.bisect_left(sorted(pi),mem_pi[I]) + 1]
+        beta_pi = sorted(pi)[bisect.bisect_right(sorted(pi),mem_pi[I])]
 
         j = bisect.bisect_left(sorted(rho), mem_rho[I+1])
         if j==0:
@@ -61,6 +63,8 @@ class Adversary:
         else:
             (pi1, rho1) = self.advStrategy(k-1, pi, rho, l_pi, r_pi, l_rho, r_rho)
             (alpha_pi, beta_pi, alpha_rho, beta_rho) = self.refineIntervals(pi1, rho1, l_pi, r_pi, l_rho, r_rho)
+            #print(f'(l_pi,r_pi,l_rho,r_rho)={(l_pi,r_pi,l_rho,r_rho)}')
+            #print(f'(alpha_pi, beta_pi, alpha_rho, beta_rho) = { (alpha_pi, beta_pi, alpha_rho, beta_rho) }')
             return self.advStrategy(k-1, pi1, rho1, alpha_pi, beta_pi, alpha_rho, beta_rho)
 
 
@@ -74,16 +78,24 @@ class Adversary:
         for x in pi:
             sketch_pi.update(x)
         for x in rho:
-            sketch_pi.update(x)
+            sketch_rho.update(x)
         
         if sketch_pi.get_error()>sketch_rho.get_error():
-            stream = pi
+            stream1 = pi
+            stream2 = rho
         else:
-            stream = rho
+            stream1 = rho
+            stream2 = pi
 
-        sorted_list = sorted(list(set(stream)))
+        #return (stream1,stream2)
 
-        return_stream = []
-        for x in stream:
-            return_stream += [bisect.bisect_left(sorted_list, x)]
-        return return_stream
+        return_streams = ()
+        for stream in (stream1, stream2) :
+            sorted_list = sorted(list(set(stream)))
+
+            return_stream = []
+            for x in stream:
+                return_stream += [bisect.bisect_left(sorted_list, x)]
+            return_streams += (tuple(return_stream),)
+        #print(return_streams)
+        return return_streams
