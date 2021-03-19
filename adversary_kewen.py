@@ -28,10 +28,10 @@ class AdversaryKewen:
         stream = ()
         for i in range(n):
             x1,x2 = sk.max_error_range()
-            print(f'x1,x2={(x1,x2)}')
+            #print(f'x1,x2={(x1,x2)}')
             x = self.get_between(x1, x2)
-            print(f'x={(x[0])}')
-            print('x={(x[0])}')
+            #print(f'x={(x[0])}')
+            #print('x={(x[0])}')
             stream += x
             sk.update(x[0])
 
