@@ -9,7 +9,8 @@ class StairwayToHeaven:
         self.n = 0
         self.x_min = max_inf 
         self.x_max = min_inf 
-        self.items = [[self.x_max,self.x_min,0,0]] #[x1,x2,y1,y2]
+        self.items = [[self.x_max,self.x_min,0,0,0]] #[x1,x2,y1,y2, number_of_times]
+        self.freq = [0 for i in range(max_size+1)]
 
     def update(self, x):
         self.x_max = max(self.x_max, x)
@@ -38,7 +39,12 @@ class StairwayToHeaven:
                 best_i = i
         self.items[best_i][1] = self.items[best_i+1][1]
         self.items[best_i][3] = self.items[best_i+1][3]
+        #print(self.get_freq())
+        #print(best_i)
+        self.items[best_i][4] += self.items[best_i+1][4] + 1
         self.items.pop(best_i+1)
+        #print(self.get_freq())
+        self.freq[best_i] += 1
         return best_i+1
         
     def get_bounds(self):
@@ -58,6 +64,10 @@ class StairwayToHeaven:
     
     def get_heights(self):
         return [item[3]-item[2] for item in self.items]
+
+    def get_freq(self):
+        #return [item[4] for item in self.items]
+        return self.freq
 
     def get_memory(self):
         mem = set()
